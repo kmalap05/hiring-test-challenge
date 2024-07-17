@@ -24,10 +24,22 @@ module.exports = {
             lineHeight: "18px",
           },
         ],
+        "custom-14": [
+          "14px",
+          {
+            lineHeight: "14px",
+          },
+        ],
         "custom-16": [
           "16px",
           {
             lineHeight: "20px",
+          },
+        ],
+        "custom-24": [
+          "24px",
+          {
+            lineHeight: "36px",
           },
         ],
       },
