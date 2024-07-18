@@ -1,4 +1,5 @@
 "use client";
+
 import React, {
   createContext,
   useState,
@@ -15,43 +16,56 @@ export const useWishlist = () => useContext(WishlistContext);
 export const WishlistProvider = ({ children }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
 
-  useEffect(() => {
-    // Fetch wishlist items from the database
-    const fetchWishlistItems = async () => {
+  const fetchWishlistItems = useCallback(async () => {
+    try {
       const response = await fetch("/api/wishlist");
+      if (!response.ok) throw new Error("Failed to fetch wishlist items");
       const data = await response.json();
       setWishlistItems(data);
-    };
-    fetchWishlistItems();
-  }, []);
-
-  const addToWishlist = useCallback(async (item) => {
-    const response = await fetch("/api/wishlist", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(item),
-    });
-    if (response.ok) {
-      setWishlistItems((prevItems) => [...prevItems, item]);
+    } catch (error) {
+      console.error("Error fetching wishlist items:", error);
     }
   }, []);
 
-  const removeFromWishlist = useCallback(async (itemToRemove) => {
-    const response = await fetch("/api/wishlist", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ label: itemToRemove.label }),
-    });
-    if (response.ok) {
+  useEffect(() => {
+    fetchWishlistItems();
+  }, [fetchWishlistItems]);
+
+  const updateWishlist = useCallback(async (method, item) => {
+    try {
+      const response = await fetch("/api/wishlist", {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(
+          method === "DELETE" ? { label: item.label } : item
+        ),
+      });
+      if (!response.ok)
+        throw new Error(
+          `Failed to ${method === "POST" ? "add to" : "remove from"} wishlist`
+        );
+
       setWishlistItems((prevItems) =>
-        prevItems.filter((item) => item.label !== itemToRemove.label)
+        method === "POST"
+          ? [...prevItems, item]
+          : prevItems.filter((prevItem) => prevItem.label !== item.label)
+      );
+    } catch (error) {
+      console.error(
+        `Error ${method === "POST" ? "adding to" : "removing from"} wishlist:`,
+        error
       );
     }
   }, []);
+
+  const addToWishlist = useCallback(
+    (item) => updateWishlist("POST", item),
+    [updateWishlist]
+  );
+  const removeFromWishlist = useCallback(
+    (item) => updateWishlist("DELETE", item),
+    [updateWishlist]
+  );
 
   const contextValue = useMemo(
     () => ({
