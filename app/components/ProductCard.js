@@ -1,52 +1,23 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { useWishlist } from "@contexts/WishlistContext"; // Adjust the path as per your project structure
+import { useWishlist } from "@contexts/WishlistContext";
 
 export default function Product({ product }) {
   const { title, description, variants, tags } = product;
-  const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist(); // Using context hook
+  const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist();
 
   const [selectedVariant, setSelectedVariant] = useState(variants[0]);
 
-  useEffect(() => {
-    const fetchWishlistItems = () => {
-      if (typeof window !== "undefined") {
-        const storedWishlist =
-          JSON.parse(localStorage.getItem("wishlist")) || [];
-        storedWishlist.forEach((item) => {
-          if (
-            !wishlistItems.some(
-              (wishlistItem) => wishlistItem.label === item.label
-            )
-          ) {
-            addToWishlist(item); // Update wishlist items via context
-          }
-        });
-      }
-    };
-    fetchWishlistItems();
-  }, []); // The empty dependency array ensures this effect runs only once
-
   const handleWishlistToggle = () => {
     if (isInWishlist(selectedVariant)) {
-      removeFromWishlist(selectedVariant); // Remove from wishlist via context
-      if (typeof window !== "undefined") {
-        const updatedWishlist = wishlistItems.filter(
-          (item) => item.label !== selectedVariant.label
-        );
-        localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-      }
+      removeFromWishlist(selectedVariant);
     } else {
       addToWishlist({
         ...selectedVariant,
         title,
         description,
-      }); // Add to wishlist via context
-      if (typeof window !== "undefined") {
-        const updatedWishlist = [...wishlistItems, selectedVariant];
-        localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
-      }
+      });
     }
   };
 

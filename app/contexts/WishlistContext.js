@@ -16,30 +16,41 @@ export const WishlistProvider = ({ children }) => {
   const [wishlistItems, setWishlistItems] = useState([]);
 
   useEffect(() => {
-    // Initialize from local storage
-    if (typeof window !== "undefined") {
-      const storedWishlist = JSON.parse(localStorage.getItem("wishlist"));
-      if (storedWishlist) {
-        setWishlistItems(storedWishlist);
-      }
+    // Fetch wishlist items from the database
+    const fetchWishlistItems = async () => {
+      const response = await fetch("/api/wishlist");
+      const data = await response.json();
+      setWishlistItems(data);
+    };
+    fetchWishlistItems();
+  }, []);
+
+  const addToWishlist = useCallback(async (item) => {
+    const response = await fetch("/api/wishlist", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(item),
+    });
+    if (response.ok) {
+      setWishlistItems((prevItems) => [...prevItems, item]);
     }
   }, []);
 
-  useEffect(() => {
-    // Sync with local storage
-    if (typeof window !== "undefined") {
-      localStorage.setItem("wishlist", JSON.stringify(wishlistItems));
+  const removeFromWishlist = useCallback(async (itemToRemove) => {
+    const response = await fetch("/api/wishlist", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ label: itemToRemove.label }),
+    });
+    if (response.ok) {
+      setWishlistItems((prevItems) =>
+        prevItems.filter((item) => item.label !== itemToRemove.label)
+      );
     }
-  }, [wishlistItems]);
-
-  const addToWishlist = useCallback((item) => {
-    setWishlistItems((prevItems) => [...prevItems, item]);
-  }, []);
-
-  const removeFromWishlist = useCallback((itemToRemove) => {
-    setWishlistItems((prevItems) =>
-      prevItems.filter((item) => item.label !== itemToRemove.label)
-    );
   }, []);
 
   const contextValue = useMemo(

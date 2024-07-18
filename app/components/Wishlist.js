@@ -1,21 +1,18 @@
-// Wishlist.js
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
-import { useWishlist } from "@contexts/WishlistContext"; // Adjust the path as per your project structure
+import { useWishlist } from "@contexts/WishlistContext";
 
 export default function Wishlist() {
   const [isOpen, setIsOpen] = useState(false);
-  const { wishlistItems, removeFromWishlist } = useWishlist(); // Using context hook
-
-  console.log("Updated Wishlist Items:", wishlistItems);
+  const { wishlistItems, removeFromWishlist } = useWishlist();
 
   const toggleWishlist = () => {
     setIsOpen(!isOpen);
   };
 
   const handleRemoveFromWishlist = (item) => {
-    removeFromWishlist(item); // Remove from wishlist via context
+    removeFromWishlist(item);
   };
 
   return (
@@ -27,8 +24,8 @@ export default function Wishlist() {
       <div className="wishlist__content flex justify-between items-center">
         <div className="wishlist__logo flex gap-3 items-center">
           <h3 className="wishlist__text font-semibold text-custom-24">Knoll</h3>
-          <div className="wishlist__count flex items-center justify-center text-white text-center bg-[#E02424] text-custom-14 rounded-full w-6 h-6">
-            {wishlistItems.length}
+          <div className="wishlist__count flex items-center justify-center text-white bg-[#E02424] text-custom-14 rounded-full w-6 h-6">
+            <span className="text-center">{wishlistItems.length}</span>
           </div>
         </div>
         <div className="rounded-lg py-2.5 px-5">
