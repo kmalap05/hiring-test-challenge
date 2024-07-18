@@ -1,36 +1,65 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Next.js Project Setup
+
+## Introduction
+
+This repository contains a Next.js project setup for hiring-test-challenge.
+
+## Prerequisites
+
+Before you begin, ensure you have the following installed on your machine:
+
+- Node.js (v20.0 or higher)
+- npm or yarn package manager
+- MongoDB (if using a database)
 
 ## Getting Started
 
-First, run the development server:
+Follow these steps to get the project up and running on your local machine:
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+1. **Clone the repository:**
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+   ```bash
+   git clone https://github.com/KedarMalapDev/hiring-test-challenge.git
+   cd hiring-test-challenge
+   ```
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+2. **Install dependencies:**
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+   ```bash
+   npm install   # or yarn install
+   ```
 
-## Learn More
+3. **Set up environment variables:**
 
-To learn more about Next.js, take a look at the following resources:
+   - Create a `.env.local` file in the root directory.
+   - Add necessary environment variables (e.g., MongoDB URI, API keys).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+     Example `.env.local` file:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+     ```
+     MONGODB_URI=mongodb://localhost:27017/your-database-name
+     PRODUCT_URI=http://hostname/api
+     NODE_ENV=development
+     ```
 
-## Deploy on Vercel
+4. **Start the development server:**
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+   ```bash
+   npm run dev   # or yarn dev
+   ```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+5. **Open your browser:**
+
+   Your Next.js application should now be running on `http://localhost:3000`.
+
+## Project Structure
+
+- **`/pages`**: Contains Next.js pages.
+- **`/pages/components`**: Reusable React components.
+- **`/public/assetss`**: Static assets.
+- **`/pages/global.css`**: Global stylesheet.
+- **`/lib`**: Utility functions (e.g., MongoDB connection).
+
+## Additional Notes
+
+- Ensure proper `.gitignore` rules are set for sensitive files like `.env.local`.
