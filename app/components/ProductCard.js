@@ -1,11 +1,59 @@
-// app/components/Productproduct.js
 "use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { useState } from "react";
+import { useWishlist } from "@contexts/WishlistContext"; // Adjust the path as per your project structure
 
 export default function Product({ product }) {
   const { title, description, variants, tags } = product;
+  const { wishlistItems, addToWishlist, removeFromWishlist } = useWishlist(); // Using context hook
+
   const [selectedVariant, setSelectedVariant] = useState(variants[0]);
+
+  useEffect(() => {
+    const fetchWishlistItems = () => {
+      if (typeof window !== "undefined") {
+        const storedWishlist =
+          JSON.parse(localStorage.getItem("wishlist")) || [];
+        storedWishlist.forEach((item) => {
+          if (
+            !wishlistItems.some(
+              (wishlistItem) => wishlistItem.label === item.label
+            )
+          ) {
+            addToWishlist(item); // Update wishlist items via context
+          }
+        });
+      }
+    };
+    fetchWishlistItems();
+  }, []); // The empty dependency array ensures this effect runs only once
+
+  const handleWishlistToggle = () => {
+    if (isInWishlist(selectedVariant)) {
+      removeFromWishlist(selectedVariant); // Remove from wishlist via context
+      if (typeof window !== "undefined") {
+        const updatedWishlist = wishlistItems.filter(
+          (item) => item.label !== selectedVariant.label
+        );
+        localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+      }
+    } else {
+      addToWishlist({
+        ...selectedVariant,
+        title,
+        description,
+      }); // Add to wishlist via context
+      if (typeof window !== "undefined") {
+        const updatedWishlist = [...wishlistItems, selectedVariant];
+        localStorage.setItem("wishlist", JSON.stringify(updatedWishlist));
+      }
+    }
+  };
+
+  const isInWishlist = (variant) => {
+    return wishlistItems.some((item) => item.label === variant.label);
+  };
+
   const handleVariantClick = (variant) => {
     setSelectedVariant(variant);
   };
@@ -16,8 +64,8 @@ export default function Product({ product }) {
         <div className="product__image">
           {variants.length > 0 && (
             <Image
-              src={`/assets/${variants[0].thumbnail}`}
-              alt={title}
+              src={`/assets/${selectedVariant.thumbnail}`}
+              alt={selectedVariant.label}
               width={300}
               height={200}
               className="aspect-square w-full rounded-t-lg"
@@ -60,9 +108,9 @@ export default function Product({ product }) {
         </div>
         <div className="product__variants">
           <ul className="flex flex-wrap gap-3">
-            {variants.map((variant, index) => (
+            {variants.map((variant) => (
               <li
-                key={variant.sku}
+                key={variant.label}
                 className={`w-6 h-6 rounded-full ${
                   selectedVariant === variant
                     ? "border-2 border-white"
@@ -88,7 +136,11 @@ export default function Product({ product }) {
               €{selectedVariant.price}
             </p>
           )}
-          <button className="product__button border-[1px] py-2.5 px-5 rounded-lg">
+          <button
+            className={`product__button border-[1px] py-2.5 px-5 rounded-lg ${
+              isInWishlist(selectedVariant) ? "bg-[#E02424]" : ""
+            }`}
+            onClick={handleWishlistToggle}>
             <Image
               src={`/assets/icons/icon-heart.png`}
               alt={"Button Image"}
